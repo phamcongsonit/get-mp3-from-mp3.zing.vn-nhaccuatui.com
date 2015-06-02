@@ -13,15 +13,14 @@ die();*/
 
 if (isset($_POST['action']) && $_POST['action'] == 'create'){
 	if (isset($_POST['url']) && $_POST['url'] != ''){
-		new GetMP3($_POST['url']);
+		new GetMP3('create', $_POST['url']);
 	}else{
 		echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy dữ liệu']);
 	}
 }elseif (isset($_POST['action']) && $_POST['action'] == 'delete'){
 	
 	if (isset($_POST['mp3_name']) && $_POST['mp3_name'] != ''){
-		$mp3 = new GetMP3();
-		$mp3->delete($_POST['mp3_name']);
+		$mp3 = new GetMP3('delete', $_POST['mp3_name']);
 	}else{
 		echo json_encode(['status' => 'error']);
 	}
@@ -30,14 +29,16 @@ if (isset($_POST['action']) && $_POST['action'] == 'create'){
 
 
 class GetMP3{
-	public function __construct($url){
-		if ($url != ''){
+	public function __construct($action, $url){
+		if ($action == 'create'){
 			$url = $this->remove_http($url);
 			if (intval(strpos($url, 'mp3.zing.vn'))){
 				$this->get_mp3_zing($url);
 			}elseif (strpos($url, 'nhaccuatui.com')){
 				$this->get_mp3_nhaccuatui($url);
 			}
+		}elseif ($action == 'delete'){
+			$this->delete($url); //$url = $_POST['mp3_name']
 		}
 	}
 	public function get_mp3_zing($url){
